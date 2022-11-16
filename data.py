@@ -1,11 +1,14 @@
 import json
-#experiment_id = "B1-A3-C2-1522434666266"
-experiment_id = "B3-A2-C14-1522444981929"
-log_path = "../data-3-30/logs/{}/aligned-observations.json".format(experiment_id)
-screenshot_path = "../data-3-30/screenshots/{}/".format(experiment_id)
+import os
 
+def paths_from_id(experiment_id, prefix=".."):
+    log_path = "data-3-30/logs/{}/aligned-observations.json".format(experiment_id)
+    screenshot_path = "data-3-30/screenshots/{}/".format(experiment_id)
+    return os.path.join(prefix, log_path), os.path.join(prefix, screenshot_path)
 
-def load(log_path):
+def load(experiment_id, prefix):
+    log_path, screenshot_path = paths_from_id(experiment_id, prefix)
+    print("Loading data from: {}", log_path)
     with open(log_path,"rb") as fh:
         data = json.loads(fh.read())
         last_blocks = set()

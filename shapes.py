@@ -2,37 +2,6 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from contextlib import contextmanager
 
-def draw_wireframe():
-    vertices= (
-        (1, 0, 0),
-        (1, 1, 0),
-        (0, 1, 0),
-        (0, 0, 0),
-        (1, 0, 1),
-        (1, 1, 1),
-        (0, 0, 1),
-        (0, 1, 1))
-
-    edges = (
-        (0,1),
-        (0,3),
-        (0,4),
-        (2,1),
-        (2,3),
-        (2,7),
-        (6,3),
-        (6,4),
-        (6,7),
-        (5,1),
-        (5,4),
-        (5,7))
-
-    glBegin(GL_LINES)
-    for edge in edges:
-        for vertex in edge:
-            glVertex3fv(vertices[vertex])
-    glEnd() 
-
 @contextmanager
 def glmatrix():
     glPushMatrix()
@@ -82,7 +51,7 @@ def plane(width, height, fill=None, stroke=None, stroke_width=1, texture=None):
                 glTranslatef(w, h, 0)
                 square(fill, stroke, stroke_width, texture)
 
-def draw(fill=None, stroke=None, stroke_width=1, texture=None):
+def cube(fill=None, stroke=None, stroke_width=1, texture=None):
     with glmatrix():
         glTranslatef(0.5,0.5,0.5)
         with glmatrix(): # front face
@@ -121,20 +90,3 @@ def axis():
     glEnd()
     glLineWidth(1)
 
-#vertices = [(1,1,1), ( 0, 1, 1), (0,0, 1),   (1,0, 1), # (front)
-#                   (1,1,1),  (1,0, 1),   (1,0,0),  (1, 1,0),   #/ (right)
-#                   (1,1,1),  (1, 1,0), (0, 1,0), (0, 1, 1),   #/ (top)
-#                  (0,1, 1), (0, 1,0), (0,0,0), (0,0, 1),   #/ (left)
-#                  (0,0,0),  (1,0,0),  (1,0, 1), (0,0, 1),   #/ (bottom)
-#                   (1,0,0), (0,0,0), (0, 1,0), (1, 1,0)]; #/ (back)
-
-#// Normal information
-#normals = { 0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,   // (front)
-#                    1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,   // (right)
-#                    0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,   // (top)
-#                   -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,   // (left)
-#                    0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0,   // (bottom)
-#                    0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1 }; // (back)
-    
-#def draw():
-    
