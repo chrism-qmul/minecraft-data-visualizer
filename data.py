@@ -1,5 +1,9 @@
 import json
 import os
+import glob
+
+def experiments(prefix=".."):
+    return [os.path.split(x)[-1] for x in glob.glob(os.path.join(prefix, "data-3-30/logs/*"))]
 
 def paths_from_id(experiment_id, prefix=".."):
     log_path = "data-3-30/logs/{}/aligned-observations.json".format(experiment_id)
