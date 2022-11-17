@@ -25,6 +25,8 @@ if __name__ == "__main__":
                     help='path to experiment data')
     parser.add_argument('--experiment', type=str,
                     help='experiment id')
+    parser.add_argument('--step', type=int, default=0,
+                    help='starting dialog step')
     args = parser.parse_args()
     if args.experiment:
         experiment_id = args.experiment
@@ -32,5 +34,5 @@ if __name__ == "__main__":
         print("No experiment specified, picking a random one")
         experiment_id = random.choice(data.experiments(".."))
     points = [convert_point(p) for p in data.load(experiment_id, args.path) if is_valid_point(p)]
-    app = App(points)
+    app = App(points, args.step)
     app.run()

@@ -7,7 +7,7 @@ import util
 import camera
 
 class App:
-    def __init__(self, points):
+    def __init__(self, points, starting_step):
         pygame.init()
         pygame.display.set_caption('ARCIDUCA: Minecraft world reconstruction')
         self.dimensions = []
@@ -19,7 +19,7 @@ class App:
         self.show_world = True
         pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
         self._setup_opengl()
-        self.change_dialog_step(0)
+        self.change_dialog_step(starting_step)
 
     def _setup_opengl(self):
         fbo = glGenFramebuffers(1)
@@ -70,6 +70,7 @@ class App:
         new_index = self.point_index + change
         self.point_index = max(0, min(new_index, len(self.points)-1))
         self._load_images()
+        print(self.display)
         self.camera_to_agent_position()
 
     def next_dialog_step(self):
