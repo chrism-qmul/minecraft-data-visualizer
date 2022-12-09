@@ -3,13 +3,25 @@ from app import App
 import argparse
 import random
 
+block_types = {"cwc_minecraft_green_rn": (0,1,0,1),
+    "cwc_minecraft_red_rn": (1,0,0,1),
+    "cwc_minecraft_blue_rn": (0,0,1,1),
+    "cwc_minecraft_yellow_rn": (1, 1, 0, 1),
+    "cwc_minecraft_orange_rn": (1,0.5,0,1),
+    "cwc_minecraft_purple_rn": (0.5,0,0.5,1)}
+
+def block_type_to_color(block_type):
+    if block_type not in block_types:
+        print("warning, no color for: ", block_type)
+    return block_types.get(block_type, (0.5,0.5,0.5,1))
+
 def convert_point(point):
     x = point.get("BuilderPosition").get("X")
-    y = point.get("BuilderPosition").get("Y")+0.56
-    z = point.get("BuilderPosition").get("Z")#+0.8
+    y = point.get("BuilderPosition").get("Y")+0.55
+    z = point.get("BuilderPosition").get("Z")
     yaw = point.get("BuilderPosition").get("Yaw")+90
     pitch = point.get("BuilderPosition").get("Pitch")*-1
-    world = [(xyz['X'], xyz['Y']-1, xyz['Z']) for xyz in [p['AbsoluteCoordinates'] for p in point['BlocksInGrid']]]
+    world = [((xyz['X'], xyz['Y']-1, xyz['Z']),block_type_to_color(block_type)) for xyz,block_type in [(p['AbsoluteCoordinates'],p['Type']) for p in sorted(point['BlocksInGrid'], key=lambda x: (x['AbsoluteCoordinates']['X'],x['AbsoluteCoordinates']['Y'],x['AbsoluteCoordinates']['Z']), reverse=True)]]
     return {"builder_position": {"x": x, "y": y, "z": z, "yaw": yaw, "pitch": pitch}, "world": world, "view": point.get("builder_view")}
 
 def is_valid_point(point):

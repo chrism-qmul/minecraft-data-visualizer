@@ -1,6 +1,9 @@
 import json
 import os
+import argparse
+import random
 import glob
+import pprint
 
 def experiments(prefix=".."):
     return [os.path.split(x)[-1] for x in glob.glob(os.path.join(prefix, "data-3-30/logs/*"))]
@@ -26,10 +29,29 @@ def load(experiment_id, prefix):
                 world_state['architect_view'] = screenshot_path + world_state['Screenshots']['Architect']
             #print(world_state['ChatHistory'][last_chat_history_length:])
             last_chat_history_length = len(world_state['ChatHistory'])
-            blocks = set([(block['X'], block['Y'], block['Z']) for block in [block['AbsoluteCoordinates'] for block in world_state['BlocksInGrid']]])
+            blocks = set([((position['X'], position['Y'], position['Z']),color) for position,color in [(block['AbsoluteCoordinates'], block['Type']) for block in world_state['BlocksInGrid']]])
             added_blocks = blocks - last_blocks
             removed_blocks = last_blocks - blocks
             world_state['blocks_added'] =added_blocks
             world_state['blocks_removed'] = removed_blocks
             last_blocks = blocks
             yield world_state
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog = 'MinecraftViz',
+                        description = 'visualize minecraft experiment data')
+    parser.add_argument('--path', type=str, default=".",
+                    help='path to experiment data')
+    parser.add_argument('--experiment', type=str,
+                    help='experiment id')
+    parser.add_argument('--step', type=int, default=0,
+                    help='starting dialog step')
+    args = parser.parse_args()
+    if args.experiment:
+        experiment_id = args.experiment
+    else:
+        print("No experiment specified, picking a random one")
+        experiment_id = random.choice(experiments(".."))
+    points = [p for p in load(experiment_id, args.path)]
+    pp = pprint.PrettyPrinter(indent=2)
+    pp.pprint(points)

@@ -2,9 +2,15 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+import string
 import shapes
 import util
 import camera
+from text import Text
+import numpy as np
+
+font_path = "/Library/Fonts/Arial Unicode.ttf"
+#font_path= "env/lib/python3.9/site-packages/pygame/freesansbold.ttf"
 
 class App:
     def __init__(self, points, starting_step):
@@ -17,25 +23,36 @@ class App:
         self.show_original = True
         self.lights = True
         self.show_world = True
-        pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
+        self.screen = pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
+        print("VERSION",glGetString(GL_VERSION))
+        print("SHADER LANGUAGE VERSION",glGetString(GL_SHADING_LANGUAGE_VERSION))
         self._setup_opengl()
+        self.text = Text(font_path, 200)
         self.change_dialog_step(starting_step)
 
     def _setup_opengl(self):
-        fbo = glGenFramebuffers(1)
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo)
-
-        glLight(GL_LIGHT0, GL_POSITION,  (10, 10, 10, 1)) # point light from the left, top, front
+        self.fbo = glGenFramebuffers(1)
+        #glBindFramebuffer(GL_READ_FRAMEBUFFER, self.fbo)
+        glLight(GL_LIGHT0, GL_POSITION,  (10, 5, 5, 1)) # point light from the left, top, front
         glLightfv(GL_LIGHT0, GL_AMBIENT, (0, 0, 0, 1))
         glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
         glEnable(GL_DEPTH_TEST)
+
+    def write_pixels(self):
+        im = glReadPixels(0,0,*self.display, GL_BGR, GL_FLOAT)
+        im = np.frombuffer(im, np.float32)
+        print("shape", im.shape)
+        im.shape = self.display[1], self.display[0], 3
+        im = im[::-1, :]*255
+        util.write_image(im, "test_output.png")
 
     @property
     def display(self):
         if len(self.dimensions) > 0:
             return self.dimensions[0]
         else:
-            return (1376,745)
+            return (1366,745)
+            #return (1376,0)
 
     def _load_images(self):
         if "view" in self.current_point:
@@ -55,7 +72,7 @@ class App:
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, im.shape[1], im.shape[0], 0, GL_RGB, GL_UNSIGNED_BYTE, im)
-            pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
+            self.screen = pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
 
     def toggle_original(self):
         self.show_original = not self.show_original
@@ -69,6 +86,7 @@ class App:
     def change_dialog_step(self, change):
         new_index = self.point_index + change
         self.point_index = max(0, min(new_index, len(self.points)-1))
+        print("Changed: ", self.point_index)
         self._load_images()
         print(self.display)
         self.camera_to_agent_position()
@@ -122,20 +140,39 @@ class App:
     def draw_world(self):
         if self.show_world:
             with shapes.glmatrix():
-                for box in self.current_world:
+                for i,(box,color) in enumerate(self.current_world):
+                    letter = (string.ascii_letters + string.digits)[i]
                     with shapes.glmatrix():
                         glTranslatef(*box)
                         if self.lights:
-                            shapes.cube(fill=(0.6,0.6,0.6,1), stroke=(0,0,0,1), stroke_width=2)
+                            #shapes.cube(fill=color, stroke=(0,0,0,1), stroke_width=2)
+                            #glEnable(GL_BLEND)
+                            #glBlendFunc(GL_SRC_ALPHA, GL_CONSTANT_COLOR)
+                            #glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+                            #glBlendColor(*color)
+                            #glBlendEquation(GL_FUNC_SUBTRACT)
+                            #shapes.cube(fill=(0,0,1,0.5))
+                            #shapes.cube(fill=color, texture=self.text.character_texture(letter))
+                            #shapes.cube(texture=self.text.character_texture(letter))
+                            #shapes.cube(fill=color,texture=self.circle)
+                            #self.text.enableShader(letter, color) 
+                            #shapes.cube(fill=(1,0,0,1),texture=self.text.character_texture(letter))#, stroke_width=2)
+                            #shapes.cube(fill=(1,0,0,1),texture=self.text.character_texture(letter))#, stroke_width=2)
+                            #shapes.cube(stroke_width=2)
+                            shapes.text_cube(color,(0.9,0.9,0.9,1),self.text.character(letter))
+                            #self.text.disableShader()
+                            #shapes.cube()
                         else:
                             shapes.cube(fill=(1,1,1,1))
 
     def draw_original(self):
         if len(self.textures) > 0 and self.show_original:
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, self.fbo)
             glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self.textures[0], 0);
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
             width, height = self.display
             glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+            glBindFramebuffer(GL_READ_FRAMEBUFFER, 0)
 
     def draw_axis(self):
         if self.lights:
@@ -143,8 +180,9 @@ class App:
             shapes.axis()
 
     def draw(self):
+        glClearColor(0.67,0.84,0.9,1.0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-
+        #glEnable(GL_MULTISAMPLE)
         if self.lights:
             glEnable(GL_LIGHTING)
             glEnable(GL_LIGHT0)
@@ -152,23 +190,28 @@ class App:
             glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
 
             glShadeModel(GL_SMOOTH)
-            glDepthFunc(GL_LESS);
+            #glDepthFunc(GL_LESS)
 
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_BLEND)
-
+        #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        #glEnable(GL_BLEND)
         self.draw_original()
-        self.draw_world()
         self.draw_floor()
+        self.draw_world()
         self.draw_axis()
+        #green=(0,1,0,0.5)
+        #letter = self.text.character_texture("X")
+        #shapes.text_square((1,1,0,1),(0.9,0.9,0.9,1),self.text.character("X"))
+        #shapes.square(texture=self.circle)
+        #shapes.square(texture=letter)
 
-        glDisable(GL_BLEND)
+       # glDisable(GL_BLEND)
 
         if self.lights:
             glDisable(GL_LIGHT0)
             glDisable(GL_LIGHTING)
             glDisable(GL_COLOR_MATERIAL)
 
+        self.write_pixels()
         pygame.display.flip()
 
     def run(self):
@@ -221,4 +264,6 @@ class App:
                     if event.key == pygame.K_l:
                         self.toggle_lights()
             self.draw()
+            #pygame.display.update()
             pygame.time.wait(10)
+            break
