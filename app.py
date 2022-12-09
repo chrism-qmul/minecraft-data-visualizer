@@ -38,13 +38,12 @@ class App:
         glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
         glEnable(GL_DEPTH_TEST)
 
-    def write_pixels(self):
+    def write_pixels(self, path):
         im = glReadPixels(0,0,*self.display, GL_BGR, GL_FLOAT)
         im = np.frombuffer(im, np.float32)
-        print("shape", im.shape)
         im.shape = self.display[1], self.display[0], 3
         im = im[::-1, :]*255
-        util.write_image(im, "test_output.png")
+        util.write_image(im, path)
 
     @property
     def display(self):
@@ -83,19 +82,27 @@ class App:
     def toggle_lights(self):
         self.lights = not self.lights
 
+    @property
+    def current_step(self):
+        return self.point_index
+
     def change_dialog_step(self, change):
         new_index = self.point_index + change
+        old_point_index = self.point_index
         self.point_index = max(0, min(new_index, len(self.points)-1))
+        if self.point_index == old_point_index:
+            return False
         print("Changed: ", self.point_index)
         self._load_images()
         print(self.display)
         self.camera_to_agent_position()
+        return True
 
     def next_dialog_step(self):
-        self.change_dialog_step(1)
+        return self.change_dialog_step(1)
 
     def prev_dialog_step(self):
-        self.change_dialog_step(-1)
+        return self.change_dialog_step(-1)
 
     @property
     def current_point(self):
@@ -211,8 +218,13 @@ class App:
             glDisable(GL_LIGHTING)
             glDisable(GL_COLOR_MATERIAL)
 
-        self.write_pixels()
-        pygame.display.flip()
+
+    def run_to_file(self, path):
+        self.show_original = False
+        self.draw() 
+        pygame.time.wait(10)
+        self.write_pixels(path)
+        #pygame.display.flip()
 
     def run(self):
         while True:
@@ -264,6 +276,6 @@ class App:
                     if event.key == pygame.K_l:
                         self.toggle_lights()
             self.draw()
+            pygame.display.flip()
             #pygame.display.update()
             pygame.time.wait(10)
-            break

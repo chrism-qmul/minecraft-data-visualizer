@@ -21,7 +21,7 @@ def convert_point(point):
     z = point.get("BuilderPosition").get("Z")
     yaw = point.get("BuilderPosition").get("Yaw")+90
     pitch = point.get("BuilderPosition").get("Pitch")*-1
-    world = [((xyz['X'], xyz['Y']-1, xyz['Z']),block_type_to_color(block_type)) for xyz,block_type in [(p['AbsoluteCoordinates'],p['Type']) for p in sorted(point['BlocksInGrid'], key=lambda x: (x['AbsoluteCoordinates']['X'],x['AbsoluteCoordinates']['Y'],x['AbsoluteCoordinates']['Z']), reverse=True)]]
+    world = [((xyz['X'], xyz['Y']-1, xyz['Z']),block_type_to_color(block_type)) for xyz,block_type in [(p['AbsoluteCoordinates'],p['Type']) for p in point['BlocksInGrid']]]
     return {"builder_position": {"x": x, "y": y, "z": z, "yaw": yaw, "pitch": pitch}, "world": world, "view": point.get("builder_view")}
 
 def is_valid_point(point):
@@ -39,6 +39,10 @@ if __name__ == "__main__":
                     help='experiment id')
     parser.add_argument('--step', type=int, default=0,
                     help='starting dialog step')
+    parser.add_argument('--export', action="store_true",
+                    help='export screenshot only')
+    parser.add_argument('--exportall', action="store_true",
+                    help='export all screenshots')
     args = parser.parse_args()
     if args.experiment:
         experiment_id = args.experiment
@@ -47,4 +51,15 @@ if __name__ == "__main__":
         experiment_id = random.choice(data.experiments(".."))
     points = [convert_point(p) for p in data.load(experiment_id, args.path) if is_valid_point(p)]
     app = App(points, args.step)
-    app.run()
+    if args.export:
+        filename = "{}_{}.png".format(experiment_id, app.current_step)
+        app.run_to_file(filename)
+    elif args.exportall:
+        while True:
+            filename = "{}_{}.png".format(experiment_id, app.current_step)
+            print("exporting {}".format(filename))
+            app.run_to_file(filename)
+            if not app.next_dialog_step():
+                break
+    else:
+        app.run()
