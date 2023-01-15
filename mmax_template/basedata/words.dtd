@@ -1,0 +1,4 @@
+<!ELEMENT words (word*)>
+<!ELEMENT word (#PCDATA)>
+<!ATTLIST word id ID #REQUIRED>
+<!ATTLIST word id CDATA #IMPLIED>

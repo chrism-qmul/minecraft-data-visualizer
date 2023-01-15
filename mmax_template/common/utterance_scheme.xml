@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotationscheme>
+
+<attribute id="comment" name="Comment" type="freetext">
+<value id="comment" name="Comment"/> 
+</attribute>
+
+<attribute id="imageview" name="imageview" type="imageview">
+<value id="value" name="value"/> 
+</attribute>
+
+</annotationscheme>

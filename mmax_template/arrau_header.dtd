@@ -1,0 +1,44 @@
+<!-- arrau_header.dtd                                                 -->
+<!-- DTD for ARRAU header                                             -->
+<!--      v. 0.1                                                      -->
+<!-- Author: Massimo Poesio                                           -->
+<!--      (based on the TEI header for the GNOME corpus)              -->
+<!-- Created:  2010/08/30                                             -->
+
+<!-- New TEI-style header -->
+<!ELEMENT header    (fileDesc,revisionDesc?)>
+<!-- file description:  a full bibliographical description of the computer -->
+<!-- file itself, from which a user of the text could derive a proper -->
+<!-- bibliographic citation -->
+<!ELEMENT fileDesc  (titleStmt,publicationStmt,sourceDesc)>
+<!-- revision history:   allows the encoder to provide a history of changes -->
+<!-- made during the development of the electronic text. -->
+<!ELEMENT revisionDesc (change+)>
+<!ELEMENT titleStmt (title,author)>
+<!ELEMENT publicationStmt ((book|web|leaflet|miscsource|corpus),date?,availability)>
+<!ELEMENT sourceDesc (filename,date)>
+<!ELEMENT title	    (#PCDATA)>
+<!ELEMENT author    (#PCDATA)>
+<!ELEMENT respStmt  (name,resp)>
+<!ELEMENT resp      (#PCDATA)>
+<!ELEMENT name      (#PCDATA)>
+<!ELEMENT book      (publisher,pubPlace,idno?)>
+<!ELEMENT publisher (#PCDATA)>
+<!ELEMENT pubPlace  (#PCDATA)>
+<!ELEMENT date	    (#PCDATA)>
+<!-- ISBN, etc. -->
+<!ELEMENT idno      (#PCDATA)>
+<!-- Copyright info -->
+<!ELEMENT availability (#PCDATA)>
+<!ELEMENT web       (publisher,url)>
+<!ELEMENT url       (#PCDATA)>
+<!ELEMENT leaflet   (publisher)>
+<!ELEMENT miscsource  (#PCDATA)> 
+<!ELEMENT filename  (#PCDATA)>
+<!ELEMENT corpus    (corpusname,version?,publisher,corpussection?)>
+<!ELEMENT corpusname (#PCDATA)>
+<!ELEMENT corpussection (#PCDATA)>
+<!ELEMENT version (#PCDATA)>
+<!-- item already used -->
+<!ELEMENT change    (date, respStmt, TEIitem)>
+<!ELEMENT TEIitem  (#PCDATA)>

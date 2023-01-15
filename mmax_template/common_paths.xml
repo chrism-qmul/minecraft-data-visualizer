@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE common_paths>
+<common_paths>
+<basedata_path>basedata/</basedata_path>
+<scheme_path>common/</scheme_path>
+<style_path>common/</style_path>
+<customization_path>common/</customization_path>
+<markable_path>markables/</markable_path>
+<views>
+<stylesheet>default_style.xsl</stylesheet>
+</views>
+<annotations>
+<level name="phrase" schemefile="phrase_scheme.xml" customization_file="phrase_customization.xml">$_phrase.xml</level>
+<level name="action" schemefile="action_scheme.xml" customization_file="action_customization.xml">$_action.xml</level>
+<level name="utterance" schemefile="utterance_scheme.xml" customization_file="utterance_customization.xml">$_utterance.xml</level>
+</annotations>
+</common_paths>

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotationscheme>
+
+<attribute id="comment" name="Comment" type="freetext">
+<value id="comment" name="Comment"/> 
+</attribute>
+
+<!-- Markable type --> 
+
+<attribute id="markable_type" name="Mark_type" type="nominal_button">
+<value id="phrase_markable" name="phrase" next="min_words,min_ids,gender,number,person,gram_fnc,reference" /> 
+<value id="segment_markable" name="segment"/> 
+</attribute>
+
+<!-- Basic phrase markable attributes --> 
+
+<attribute id="min_words" name="min_words" type="freetext">
+<value id="mins_word" name="Mins"/> 
+</attribute>
+
+<attribute id="min_ids" name="min_ids" type="freetext">
+<value id="mins_ids" name="Minids"/> 
+</attribute>
+
+<!-- Morpho syntactic info -->
+
+<attribute id="gender" name="Gender" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="male" name="male"/> 
+<value id="female" name="female"/> 
+<value id="neuter" name="neuter"/> 
+<value id="unspecified" name="unspecified"/> 
+</attribute>
+
+<attribute id="number" name="Number" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="plur" name="plur"/>
+<value id="sing" name="sing"/>
+<value id="mass" name="mass"/>
+<value id="undersp-num" name="undersp-num"/>
+<value id="unsure-num" name="unsure-num"/>
+</attribute>
+
+<attribute id="person" name="Person" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="per3" name="per3"/>
+<value id="per1" name="per1"/>
+<value id="per2" name="per2"/>
+</attribute>
+
+<!-- nptype not annotated in Trains  -->
+
+<!-- NB: gram_fnc not annotated in Trains91 but appears to be annotated in Trains_93?? which phrase_scheme??  -->
+<attribute id="gram_fnc" name="Gram_fnc" type="nominal_list">
+<value id="no_mark" name="unmarked"/> 
+<value id="subj" name="subj"/>
+<value id="obj" name="obj"/>
+<value id="adjunct" name="adjunct"/>
+<value id="np-mod" name="np-mod"/>
+<value id="gen" name="gen"/>
+<value id="predicate" name="predicate"/>
+<value id="np-compl" name="np-compl"/>
+<value id="adj-mod" name="adj-mod"/>
+<value id="comp" name="comp"/>
+<value id="no-gf" name="no-gf"/>
+<value id="np-part" name="np-part"/>
+<value id="there-obj" name="there-obj"/>
+<value id="unsure-gf" name="unsure-gf"/>
+</attribute>
+
+<!-- Reference status -->
+<!-- 2022/06/13 added undef_reference as in RST -->
+
+<attribute id="reference" name="Reference" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="new_obj" name="new" next="category,on_map,objectAdditional,related_object,generic,ambig_choice"/> 
+<value id="old_obj" name="old" next="category,ref_type,related_object,generic,ambig_choice"/> 
+<value id="non_ref" name="non_referring" next="non_ref_type"/>  
+<value id="undef_ref" name="undef_reference"/> 
+</attribute>
+
+<attribute id="non_ref_type" name="non_ref_type" type="nominal_button">
+<value id="unknown" name="unknown"/> 
+<value id="expletive" name="expletive"/> 
+<value id="predicate" name="predicate"/> 
+<value id="quantifier" name="quantifier"/> 
+<value id="coordination" name="coordination"/> 
+<value id="idiom" name="idiom"/> 
+<value id="incomplete" name="incomplete"/> 
+<value id="grounding" name="grounding"/>
+</attribute>
+
+<!-- Semantics -->
+ 
+<attribute id="category" name="Category" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="person" name="person"/> 
+<value id="animate" name="animate"/> 
+<value id="substance" name="substance"/> <!-- Added 2020/05 from Gnome_2001 -->
+<value id="concrete" name="concrete"/> 
+<value id="organization" name="organization"/> <!-- Added 2020/05 from RST -->
+<value id="space" name="space"/> 
+<value id="time" name="time"/> 
+<value id="plan" name="plan"/> 
+<value id="abstract" name="abstract"/>
+<value id="medicine" name="medicine"/>   <!-- Added 2020/05 from Gnome_2001 -->
+<value id="disease" name="disease"/>    <!-- Added 2020/05 from Gnome_2001 -->
+<value id="numerical" name="numerical"/>       <!-- Added 2020/05 from RST --> 
+<value id="undersp-onto" name="undersp-onto"/> <!-- Added 2020/05 from Gnome_2001 -->
+<value id="unknown" name="unknown"/> 
+</attribute>
+
+<attribute id="generic" name="Generic" type="nominal_list">
+               <!-- <value id="no_mark" name="unmarked"/> -->
+               <value id="generic-no" name="generic-no"/>
+               <value id="generic-yes" name="generic-yes"/>
+               <value id="operator-instruction" name="operator-instruction"/>
+               <value id="operator-modal" name="operator-modal"/>
+               <value id="operator-tquant" name="operator-tquant"/>
+               <value id="operator-question" name="operator-question"/>
+               <value id="operator-conditional" name="operator-conditional"/>
+               <value id="operator-iquant" name="operator-iquant"/>
+               <value id="undersp-substance" name="undersp-substance"/>
+               <value id="undersp-replicable" name="undersp-replicable"/>
+               <value id="undersp-disease" name="undersp-disease"/>
+               <value id="episodic-no" name="episodic-no"/>
+               <value id="no-generic" name="no-generic"/>
+               <value id="undersp-generic" name="undersp-generic"/>
+               <value id="unsure-generic" name="unsure-generic"/>
+</attribute> 
+
+
+<!-- Anaphoric information -->
+
+<attribute id="ref_type" name="Ref_type" type="nominal_button">
+<value id="phrase" name="phrase" next="on_map,objectAdditional,phrase_ante"/> 
+<value id="segment" name="segment" next="segment_ante"/> 
+</attribute>
+
+<attribute id="phrase_ante" name="Phrase_Antecedent" type="nominal_button">
+<value id="sgl_phr" name="single_phrase" next="sgl_p_ante"/> 
+<value id="mul_phr" name="multiple_phrases" next="mul_p_ante"/> 
+</attribute>
+
+<attribute id="sgl_p_ante" name="Single_phrase_antecedent" 
+type="markable_pointer"
+color="green" target_domain="phrase"
+max_size="1"
+point_to_markable_text="Mark this phrase as antecedent"
+remove_pointer_to_markable_text="Remove reference to this phrase">
+<value id="sgl_p_ante_not_set" name="not_set"/> 
+<value id="sgl_p_ante_set" name="set"/> 
+</attribute>
+
+<attribute id="mul_p_ante" name="Multiple_phrase_antecedents" 
+type="markable_pointer"
+color="green" target_domain="phrase"
+point_to_markable_text="Add this phrase to antecedent list"
+remove_pointer_to_markable_text="Remove this phrase from antecedent list">
+<value id="mul_p_ante_not_set" name="not_set"/> 
+<value id="mul_p_ante_set" name="set"/> 
+</attribute>
+
+<attribute id="segment_ante" name="Segment_antecedent" type="markable_pointer"
+color="red" target_domain="phrase"
+point_to_markable_text="Add this segment to antecedent list"
+remove_pointer_to_markable_text="Remove this segment from antecedent list">
+<value id="mul_s_ante_not_set" name="not_set"/> 
+<value id="mul_s_ante_set" name="set"/> 
+</attribute>
+
+<!--
+    <attribute id="segment_ante" name="Segment_antecedent" type="markable_pointer" -->
+<!-- color="red" target_domain="utterance" -->
+<!-- point_to_markable_text="Add this segment to antecedent list" -->
+<!-- remove_pointer_to_markable_text="Remove this segment from antecedent list"> -->
+<!-- <value id="mul_s_ante_not_set" name="not_set"/>  -->
+<!-- <value id="mul_s_ante_set" name="set"/>  -->
+<!-- </attribute>
+-->
+
+<attribute id="related_object" name="Related_object" type="nominal_button">
+<value id="no" name="no"/> 
+<value id="yes" name="yes" next="related_phrase,related_rel"/> 
+</attribute>
+
+<attribute id="related_phrase" name="Related_phrase" type="markable_pointer"
+color="orange" target_domain="phrase"
+point_to_markable_text="Mark this phrase as related"
+remove_pointer_to_markable_text="Remove related marking from this phrase">
+<value id="mul_p_ante_not_set" name="not_set"/> 
+<value id="mul_p_ante_set" name="set"/> 
+</attribute>
+
+<attribute id="related_rel" name="related_rel" type="nominal_button">
+<value id="no_mark" name="unmarked"/>
+<value id="poss" name="poss"/> 
+<value id="poss-inv" name="poss-inv"/> 
+<value id="subset" name="subset"/> 
+<value id="subset-inv" name="subset-inv"/>
+<value id="element" name="element"/> 
+<value id="element-inv" name="element-inv"/> 
+<value id="other" name="other"/>  
+<value id="other-inv" name="other-inv"/> 
+<value id="undersp-rel" name="undersp-rel"/>  
+</attribute>
+
+<!-- Deixis -->
+
+<attribute id="on_map" name="On_map" type="nominal_button">
+<value id="no" name="no"/> 
+<value id="yes" name="yes" next="object"/> 
+</attribute>
+
+<attribute id="object" name="Object" type="nominal_list">
+<value id="other" name="other"/> 
+<value id="engine_e1" name="engine_e1"/> 
+<value id="engine_e2" name="engine_e2"/> 
+<value id="engine_e3" name="engine_e3"/> 
+<value id="boxcar_from_bath" name="boxcar_from_bath"/> 
+<value id="boxcar_from_dansville" name="boxcar_from_dansville"/> 
+<value id="boxcar_from_elmira" name="boxcar_from_elmira"/> 
+<value id="tanker_car" name="tanker_car"/> 
+<value id="banana_warehouse" name="banana_warehouse"/> 
+<value id="orange_warehouse" name="orange_warehouse"/> 
+<value id="oj_factory" name="oj_factory"/> 
+<value id="avon" name="Avon"/> 
+<value id="bath" name="Bath"/> 
+<value id="corning" name="Corning"/> 
+<value id="dansville" name="Dansville"/> 
+<value id="elmira" name="Elmira"/> 
+</attribute>
+
+<!-- 2022/06/13 Added object as in RST for deictic references to objects not on map (S, U) -->
+
+<attribute id="objectAdditional" name="ObjectAdditional" type="freetext">
+<value id="objectAdditional" name="ObjectAdditional"/> 
+</attribute>
+
+<!-- Ambiguity -->
+
+<attribute id="ambig_choice" name="Ambiguity" type="nominal_button">
+<value id="unambiguous" name="unambiguous"/> 
+<value id="ambiguous" name="ambiguous" next="ref_type_2"/> 
+<value id="ambiguous_antecedent" name="ambiguous_antecedent"/> 
+</attribute>
+
+<attribute id="ref_type_2" name="Ref_type_2" type="nominal_button">
+<value id="phrase" name="phrase" next="category_2,on_map_2,objectAdditional2,phrase_ante_2,related_object_2,generic_2"/> 
+<value id="segment" name="segment" next="category_2,segment_ante_2,related_object_2"/> 
+<value id="new" name="new" next="category_2,on_map_2,objectAdditional2,related_object_2,generic_2"/> 
+<value id="non_ref" name="non_referring" next="non_ref_type_2"/>  
+<value id="undef_ref" name="undef_reference_2"/>
+</attribute>
+
+<attribute id="category_2" name="Category_2" type="nominal_button">
+<value id="no_mark" name="unmarked"/> 
+<value id="person" name="person"/> 
+<value id="animate" name="animate"/> 
+<value id="substance" name="substance"/> <!-- Added 2020/05 from Gnome_2001 -->
+<value id="medicine" name="medicine"/>   <!-- Added 2020/05 from Gnome_2001 -->
+<value id="concrete" name="concrete"/> 
+<value id="organization" name="organization"/>  <!-- Added 2020/05 from RST -->
+<value id="space" name="space"/> 
+<value id="time" name="time"/> 
+<value id="disease" name="disease"/>    <!-- Added 2020/05 from Gnome_2001 -->
+<value id="numerical" name="numerical"/>        <!-- Added 2020/05 from RST -->
+<value id="plan" name="plan"/> 
+<value id="abstract" name="abstract"/> 
+<value id="undersp-onto" name="undersp-onto"/> <!-- Added 2020/05 from Gnome_2001 -->
+<value id="unknown" name="unknown"/> 
+</attribute>
+
+<attribute id="related_object_2" name="Related_object_2" type="nominal_button">
+<value id="no" name="no"/> 
+<value id="yes" name="yes" next="related_phrase_2,related_rel_2"/> 
+</attribute>
+
+<attribute id="related_phrase_2" name="Related_phrase_2" type="markable_pointer"
+color="orange" target_domain="phrase"
+point_to_markable_text="Mark this phrase as related"
+remove_pointer_to_markable_text="Remove related marking from this phrase">
+<value id="mul_p_ante_not_set" name="not_set"/> 
+<value id="mul_p_ante_set" name="set"/> 
+</attribute>
+
+<attribute id="related_rel_2" name="related_rel_2" type="nominal_button">
+<value id="no_mark" name="unmarked"/>
+<value id="poss" name="poss"/> 
+<value id="poss-inv" name="poss-inv"/> 
+<value id="subset" name="subset"/> 
+<value id="subset-inv" name="subset-inv"/>
+<value id="element" name="element"/> 
+<value id="element-inv" name="element-inv"/> 
+<value id="other" name="other"/>  
+<value id="other-inv" name="other-inv"/> 
+<value id="undersp-rel" name="undersp-rel"/>  
+</attribute>
+
+<attribute id="non_ref_type_2" name="non_ref_type_2" type="nominal_button">
+<value id="unknown" name="unknown"/> 
+<value id="expletive" name="expletive"/> 
+<value id="predicate" name="predicate"/> 
+<value id="quantifier" name="quantifier"/> 
+<value id="idiom" name="idiom"/> 
+<value id="incomplete" name="incomplete"/> 
+</attribute>
+
+<attribute id="on_map_2" name="On_map_2" type="nominal_button">
+<value id="no" name="no"/> 
+<value id="yes" name="yes" next="object_2"/> 
+</attribute>
+
+<attribute id="object_2" name="Object_2" type="nominal_list">
+<value id="other" name="other"/> 
+<value id="engine_e1" name="engine_e1"/> 
+<value id="engine_e2" name="engine_e2"/> 
+<value id="engine_e3" name="engine_e3"/> 
+<value id="boxcar_from_bath" name="boxcar_from_bath"/> 
+<value id="boxcar_from_dansville" name="boxcar_from_dansville"/> 
+<value id="boxcar_from_elmira" name="boxcar_from_elmira"/> 
+<value id="tanker_car" name="tanker_car"/> 
+<value id="banana_warehouse" name="banana_warehouse"/> 
+<value id="orange_warehouse" name="orange_warehouse"/> 
+<value id="oj_factory" name="oj_factory"/> 
+<value id="avon" name="Avon"/> 
+<value id="bath" name="Bath"/> 
+<value id="corning" name="Corning"/> 
+<value id="dansville" name="Dansville"/> 
+<value id="elmira" name="Elmira"/> 
+</attribute>
+
+<attribute id="objectAdditional2" name="ObjectAdditional2" type="freetext">
+<value id="objectAdditional2" name="ObjectAdditional2"/> 
+</attribute>
+
+<attribute id="phrase_ante_2" name="Phrase_Antecedent_2" type="nominal_button">
+<value id="sgl_phr" name="single_phrase" next="sgl_p_ante_2"/> 
+<value id="mul_phr" name="multiple_phrases" next="mul_p_ante_2"/> 
+</attribute>
+
+<attribute id="sgl_p_ante_2" name="Single_phrase_antecedent_2" 
+type="markable_pointer"
+color="x:008000" target_domain="phrase"
+max_size="1"
+point_to_markable_text="Mark this phrase as second antecedent"
+remove_pointer_to_markable_text="Remove reference to this phrase">
+<value id="sgl_p_ante_2_not_set" name="not_set"/> 
+<value id="sgl_p_ante_2_set" name="set"/> 
+</attribute>
+
+<attribute id="mul_p_ante_2" name="Multiple_phrase_antecedents_2" 
+type="markable_pointer"
+color="x:008000" target_domain="phrase"
+point_to_markable_text="Add this phrase to second antecedent list"
+remove_pointer_to_markable_text="Remove this phrase from antecedent list">
+<value id="mul_p_ante_2_not_set" name="not_set"/> 
+<value id="mul_p_ante_2_set" name="set"/> 
+</attribute>
+
+<attribute id="segment_ante_2" name="Segment_Antecedent_2" 
+type="markable_pointer"
+color="x:800000" target_domain="phrase"
+point_to_markable_text="Add this segment to second antecedent list"
+remove_pointer_to_markable_text="Remove this segment from antecedent list">
+<value id="mul_s_ante_2_not_set" name="not_set"/> 
+<value id="mul_s_ante_2_set" name="set"/> 
+</attribute>
+
+<!--
+    <attribute id="segment_ante_2" name="Segment_Antecedent_2" 
+type="markable_pointer"
+color="x:800000" target_domain="utterance"
+point_to_markable_text="Add this segment to second antecedent list"
+remove_pointer_to_markable_text="Remove this segment from antecedent list">
+<value id="mul_s_ante_2_not_set" name="not_set"/> 
+<value id="mul_s_ante_2_set" name="set"/> 
+</attribute>
+
+-->
+
+<attribute id="generic_2" name="Generic_2" type="nominal_list">
+	       <!-- <value id="no_mark" name="unmarked"/> -->
+	       <value id="generic-no" name="generic-no"/>
+	       <value id="generic-yes" name="generic-yes"/>
+	       <value id="operator-instruction" name="operator-instruction"/>
+	       <value id="operator-modal" name="operator-modal"/>
+	       <value id="operator-tquant" name="operator-tquant"/>
+	       <value id="operator-question" name="operator-question"/>
+	       <value id="operator-conditional" name="operator-conditional"/>
+	       <value id="operator-iquant" name="operator-iquant"/>
+	       <value id="undersp-substance" name="undersp-substance"/>
+	       <value id="undersp-replicable" name="undersp-replicable"/>
+	       <value id="undersp-disease" name="undersp-disease"/>
+	       <value id="episodic-no" name="episodic-no"/>
+	       <value id="no-generic" name="no-generic"/>
+	       <value id="undersp-generic" name="undersp-generic"/>
+	       <value id="unsure-generic" name="unsure-generic"/>
+</attribute> 
+
+<!-- Gnome_2001 extra attributes - deix, structure, loeb not annotated in Trains_93 -->  
+
+</annotationscheme>

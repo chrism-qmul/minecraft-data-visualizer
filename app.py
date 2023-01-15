@@ -8,6 +8,15 @@ import util
 import camera
 from text import Text
 import numpy as np
+from collections import Counter
+
+color_name_to_rgb = {"green": (0,1,0,1),
+    "red": (1,0,0,1),
+    "blue": (0,0,1,1),
+    "yellow": (1, 1, 0, 1),
+    "orange": (1,0.5,0,1),
+    "purple": (0.5,0,0.5,1),
+    "unknown":(0.5,0.5,0.5,1)}
 
 font_path = "/Library/Fonts/Arial Unicode.ttf"
 #font_path= "env/lib/python3.9/site-packages/pygame/freesansbold.ttf"
@@ -145,10 +154,12 @@ class App:
                 shapes.plane(11, 11, fill=(1,1,1,0.5), stroke=(0,0,0,1))
 
     def draw_world(self):
+        counts = Counter()
         if self.show_world:
             with shapes.glmatrix():
                 for i,(box,color) in enumerate(self.current_world):
-                    letter = (string.ascii_letters + string.digits)[i]
+                    letter = (string.ascii_letters + string.digits)[counts[color]]
+                    counts[color] += 1
                     with shapes.glmatrix():
                         glTranslatef(*box)
                         if self.lights:
@@ -166,7 +177,7 @@ class App:
                             #shapes.cube(fill=(1,0,0,1),texture=self.text.character_texture(letter))#, stroke_width=2)
                             #shapes.cube(fill=(1,0,0,1),texture=self.text.character_texture(letter))#, stroke_width=2)
                             #shapes.cube(stroke_width=2)
-                            shapes.text_cube(color,(0.9,0.9,0.9,1),self.text.character(letter))
+                            shapes.text_cube(color_name_to_rgb[color],(0.9,0.9,0.9,1),self.text.character(letter))
                             #self.text.disableShader()
                             #shapes.cube()
                         else:
