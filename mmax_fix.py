@@ -1,6 +1,8 @@
 import main
 import sys
 import os
+import cv2
+import copy
 import data
 from spacy.lang.en import English
 from spacy.pipeline import SentenceSegmenter
@@ -13,6 +15,9 @@ import shutil
 import logging
 from distutils.dir_util import copy_tree
 import neuralcoref
+from tqdm import tqdm
+
+from util import image_mae, mae
 
 from iglu_datasets import MultiturnDataset, SingleturnDataset
 from iglu_datasets.task import Tasks
@@ -68,7 +73,7 @@ def write_xml(xml, path):
         fh.write(xml)
 
 def base_dir(dir_path):
-    return os.path.join("export", dir_path)
+    return os.path.join("export_fix", dir_path)
 
 for dir_path in ["markables", "common", "basedata","basedata/images"]:
     final_path = base_dir(dir_path)
@@ -220,12 +225,12 @@ class Doc:
         points = [x[1] for x in chat_points]
         #print(points)
         #return
-        for point_idx, (chat, point) in enumerate(chat_points):
+        for point_idx, (chat, point) in enumerate(tqdm(chat_points, position=0, desc=f"Experiment {experiment}")):
             party, message = None, None
             app = App(points, point_idx)
             image_filename = base_dir(f"basedata/images/{experiment}_{point_idx}.png")
             app.run_to_file(image_filename)
-            app.letter_coord_to_file(f"basedata/images/{experiment}_{point_idx}.json")
+            app.letter_coord_to_file(base_dir(f"basedata/images/{experiment}_{point_idx}.json"))
             if chat:
                 party, message = chat.split(" ", 1)
                 doc.add_sentence(party.strip("<>"), message, f"images/{experiment}_{point_idx}.png", False)
@@ -238,6 +243,18 @@ class Doc:
             if summary:
                 doc.add_sentence("Builder", summary, f"images/{experiment}_{point_idx}.png", True)
                 #doc.add_action([summary], image_filename)
+            for app_idx, perm in enumerate(tqdm(app.app_permutations(), position=1, desc=f"Step")):
+                new_points = copy.deepcopy(points)
+                new_points[point_idx]['world'] = perm
+                app.change_data(new_points)
+                image_filename = base_dir(f"basedata/images/{experiment}_{point_idx}.png")
+                original_export = cv2.imread(f"/Users/chrismadge/annotated-minecraft-export/Minecraft_Dialogue_Corpus_Maris_2024_03_01/basedata/images/{experiment}_{point_idx}.png")
+                im_buffer = app.image_buffer()
+                if mae(im_buffer, original_export) < 0.1:
+                    app.run_to_file(image_filename)
+                    app.letter_coord_to_file(base_dir(f"basedata/images/{experiment}_{point_idx}.json"))
+                    #print("****** Found Match! *****")
+                    break
         return doc
 
     @classmethod
@@ -444,29 +461,34 @@ class Doc:
 
 if __name__ == "__main__":
     #dataset = MultiturnDataset(dataset_version='v1.0')
-    tasknames = iglu.get_tasknames()
+    #tasknames = iglu.get_tasknames()
     #iglu_data = iglu.get_data()
     #experiment = dataset.tasks['c116']
     #for experiment in ['c116']:#dataset.tasks.keys():
     #for task in [tasknames[8]]:
-    for task in tasknames:
-        try:
+    #for task in tasknames:
+    #    try:
             #if "2-c118" in task:
-            if True:
-                doc = Doc.from_iglu_task(task)
-            #for experiment in data.experiments(path):
-            #    doc = Doc.from_experiment(experiment, path)
-                doc.use_template()
-                doc.export_utterances()
-                doc.export_actions()
-                doc.export_phrases()
-                doc.export_words()
-                doc.export_base()
-                print(f"Task {task} done")
-            else:
-                print(f"Task {task} not found")
-        except Exception:
-            print(f"Task {task} failed")
+    #        if True:
+    #            doc = Doc.from_iglu_task(task)
+    path="/Users/chrismadge/minecraft/data-3-30/logs/"
+    print(data.experiments(path))
+    for experiment in data.experiments(path):
+        if "B1-A3-C1-1522435497386" in experiment:
+            print(experiment)
+            doc = Doc.from_experiment(experiment, path)
+#        print(doc)
+              #  doc.use_template()
+              #  doc.export_utterances()
+              #  doc.export_actions()
+              #  doc.export_phrases()
+              #  doc.export_words()
+              #  doc.export_base()
+              #  print(f"Task {task} done")
+            #else:
+            #    print(f"Task {task} not found")
+        #except Exception:
+        #    print(f"Task {task} failed")
 #        
 
 #

@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+#import pyglet
+#from pyglet.gl import *
 import string
 import shapes
 import util
@@ -9,6 +11,10 @@ import camera
 from text import Text
 import numpy as np
 from collections import Counter
+import json
+from itertools import permutations
+import copy
+from math import factorial
 
 color_name_to_rgb = {"green": (0,1,0,1),
     "red": (1,0,0,1),
@@ -21,6 +27,20 @@ color_name_to_rgb = {"green": (0,1,0,1),
 font_path = "/Library/Fonts/Arial Unicode.ttf"
 #font_path= "env/lib/python3.9/site-packages/pygame/freesansbold.ttf"
 
+# do app multiple times
+# permutations on current_world
+
+class Permutation:
+    def __init__(self, xs):
+        self.xs = xs
+
+    def __iter__(self):
+        yield from permutations(self.xs)
+
+    def __len__(self):
+        return factorial(len(self.xs)) 
+        
+
 class App:
     def __init__(self, points, starting_step):
         pygame.init()
@@ -29,30 +49,38 @@ class App:
         self.textures = []
         self.points = points
         self.point_index = 0
+        self.letter_to_coord = {}
+        self.starting_step = starting_step
         self.show_original = True
         self.lights = True
         self.show_world = True
         self.screen = pygame.display.set_mode(self.display, DOUBLEBUF|OPENGL)
-        print("VERSION",glGetString(GL_VERSION))
-        print("SHADER LANGUAGE VERSION",glGetString(GL_SHADING_LANGUAGE_VERSION))
+        #self.screen = RenderingWindow(self.dimensions)
+        #print("VERSION",glGetString(GL_VERSION))
+        #print("SHADER LANGUAGE VERSION",glGetString(GL_SHADING_LANGUAGE_VERSION))
         self._setup_opengl()
         self.text = Text(font_path, 200)
         self.change_dialog_step(starting_step)
 
     def _setup_opengl(self):
         self.fbo = glGenFramebuffers(1)
+        #glGenFramebuffers(1, self.fbo)
         #glBindFramebuffer(GL_READ_FRAMEBUFFER, self.fbo)
-        glLight(GL_LIGHT0, GL_POSITION,  (10, 5, 5, 1)) # point light from the left, top, front
+        #glLight(GL_LIGHT0, GL_POSITION,  (10, 5, 5, 1)) # point light from the left, top, front
+        glLight(GL_LIGHT0, GL_POSITION,  (1, 1, 1, 0)) # point light from the left, top, front
         glLightfv(GL_LIGHT0, GL_AMBIENT, (0, 0, 0, 1))
         glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
         glEnable(GL_DEPTH_TEST)
 
-    def write_pixels(self, path):
+    def read_pixels(self):
         im = glReadPixels(0,0,*self.display, GL_BGR, GL_FLOAT)
         im = np.frombuffer(im, np.float32)
         im.shape = self.display[1], self.display[0], 3
         im = im[::-1, :]*255
-        util.write_image(im, path)
+        return im
+
+    def write_pixels(self, path):
+        util.write_image(self.read_pixels(), path)
 
     @property
     def display(self):
@@ -68,7 +96,7 @@ class App:
             self.textures = glGenTextures(len(paths)+1)
             self.dimensions = []
             for texture, path in zip(self.textures, paths):
-                print("path", path)
+                #print("path", path)
                 im = util.load_texture(path)
                 if im is not None:
                     self.dimensions.append((im.shape[1], im.shape[0]))
@@ -101,9 +129,9 @@ class App:
         self.point_index = max(0, min(new_index, len(self.points)-1))
         if self.point_index == old_point_index:
             return False
-        print("Changed: ", self.point_index)
+        #print("Changed: ", self.point_index)
         self._load_images()
-        print(self.display)
+        #print(self.display)
         self.camera_to_agent_position()
         return True
 
@@ -127,13 +155,13 @@ class App:
 
     def move_camera(self, x=0, y=0, z=0, yaw=0, pitch=0):
         self.camera.move(x=x, y=y, z=z, yaw=yaw, pitch=pitch)
-        print(self.camera)
+        #print(self.camera)
         self.camera.apply()
 
     def reset_camera(self, x, y, z, yaw, pitch):
         width, height = self.display
         self.camera = camera.Camera(x=x,y=y,z=z,width=width,height=height,pitch=pitch,yaw=yaw)
-        print(self.camera)
+        #print(self.camera)
         self.camera.apply()
 
     def camera_to_agent_position(self):
@@ -155,10 +183,55 @@ class App:
 
     def draw_world(self):
         counts = Counter()
+      # with shapes.glmatrix():
+      #     glRotatef(-90,0,0,0)
+      #     glTranslate(-6,6,-1)
+      #     glTranslatef(0.5,0.5,0.5)
+      #     shapes.text_square((0.9,0.9,0.9,1),(1,0,0,1),self.text.character("↑"))
+      # with shapes.glmatrix():
+      #     glRotatef(-90,0,0,0)
+      #     glTranslate(-6,6,-1)
+      #     glTranslatef(0.5,0.5,0.5)
+      #     shapes.text_square((0.9,0.9,0.9,1),(1,0,0,1),self.text.character("↑"))
+      # with shapes.glmatrix():
+      #     glRotatef(-90,0,0,0)
+      #     glTranslate(6,6,-1)
+      #     glTranslatef(0.5,0.5,0.5)
+      #     shapes.text_square((0.9,0.9,0.9,1),(1,0,0,1),self.text.character("↑"))
+      # with shapes.glmatrix():
+      #     glRotatef(-90,0,0,0)
+      #     glTranslate(6,-6,-1)
+      #     glTranslatef(0.5,0.5,0.5)
+      #     shapes.text_square((0.9,0.9,0.9,1),(1,0,0,1),self.text.character("↑"))
+      # for i,c in enumerate(list("north")):
+      #     with shapes.glmatrix():
+      #         glRotatef(-90,0,0,0)
+      #         glTranslate(-3+i,6,-1)
+      #         glTranslatef(0.5,0.5,0.5)
+      #         shapes.text_square((0.9,0.9,0.9,1),(0,0,0,1),self.text.character(c))
+      # for i,c in enumerate(list("east")):
+      #     with shapes.glmatrix():
+      #         glRotatef(-90,0,0,0)
+      #         glTranslatef(0.5,0.5,0.5)
+      #         glTranslate(6,1-i,-1)
+      #         shapes.text_square((0.9,0.9,0.9,1),(0,0,0,1),self.text.character(c))
+      # for i,c in enumerate(list("west")):
+      #     with shapes.glmatrix():
+      #         glRotatef(-90,0,0,0)
+      #         glTranslatef(0.5,0.5,0.5)
+      #         glTranslate(-6,1-i,-1)
+      #         shapes.text_square((0.9,0.9,0.9,1),(0,0,0,1),self.text.character(c))
+      # for i,c in enumerate(list("south")):
+      #     with shapes.glmatrix():
+      #         glRotatef(-90,0,0,0)
+      #         glTranslate(-3+i,-6,-1)
+      #         glTranslatef(0.5,0.5,0.5)
+      #         shapes.text_square((0.9,0.9,0.9,1),(0,0,0,1),self.text.character(c))
         if self.show_world:
             with shapes.glmatrix():
                 for i,(box,color) in enumerate(self.current_world):
                     letter = (string.ascii_letters + string.digits)[counts[color]]
+                    self.letter_to_coord[(letter,color)]=box
                     counts[color] += 1
                     with shapes.glmatrix():
                         glTranslatef(*box)
@@ -237,6 +310,17 @@ class App:
         self.write_pixels(path)
         #pygame.display.flip()
 
+    def image_buffer(self):
+        self.show_original = False
+        self.draw() 
+        pygame.time.wait(10)
+        return self.read_pixels()
+
+    def letter_coord_to_file(self, path):
+        with open(path, "w+") as fh:
+            r = {f"{alphanumerical}_{color}": coord for (alphanumerical, color), coord in self.letter_to_coord.items()}
+            fh.write(json.dumps(r))
+
     def run(self):
         while True:
             # CONTINUOUS ACTIONS
@@ -290,3 +374,19 @@ class App:
             pygame.display.flip()
             #pygame.display.update()
             pygame.time.wait(10)
+
+        
+
+    def change_data(self, new_points):
+        self.points = new_points
+
+    def app_permutations(self):
+        return Permutation(list(self.current_point['world']))
+        #results = []
+        #for x in permutations(list(self.current_point['world'])):
+            #print(x)
+            #print("====")
+       #     new_points = copy.deepcopy(self.points)
+       #     new_points[self.point_index]['world'] = x
+       #     results.append(new_points)
+       # return results

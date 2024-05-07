@@ -18,11 +18,14 @@ def block_type_to_color(block_type):
     return block_types.get(block_type, "unknown")
 
 def experiments(prefix=".."):
-    return [os.path.split(x)[-1] for x in glob.glob(os.path.join(prefix, "data-3-30/logs/*"))]
+    #return [os.path.split(x)[-1] for x in glob.glob(os.path.join(prefix, "data-3-30/logs/*"))]
+    return [os.path.split(x)[-1] for x in glob.glob(os.path.join(prefix, "*"))]
 
 def paths_from_id(experiment_id, prefix=".."):
-    log_path = "data-3-30/logs/{}/aligned-observations.json".format(experiment_id)
-    screenshot_path = "data-3-30/screenshots/{}/".format(experiment_id)
+    #log_path = "data-3-30/logs/{}/aligned-observations.json".format(experiment_id)
+    log_path = "{}/aligned-observations.json".format(experiment_id)
+    #screenshot_path = "data-3-30/screenshots/{}/".format(experiment_id)
+    screenshot_path = "screenshots/{}/".format(experiment_id)
     return os.path.join(prefix, log_path), os.path.join(prefix, screenshot_path)
 
 def load(experiment_id, prefix):
@@ -37,7 +40,7 @@ def load(experiment_id, prefix):
             if world_state['Screenshots']['Builder']:
                 world_state['builder_view'] = screenshot_path + world_state['Screenshots']['Builder']
             #print(world_state['Screenshots'])
-            if world_state['Screenshots']['Architect']:
+            if "Architect" in world_state['Screenshots'] and world_state['Screenshots']["Architect"]:
                 world_state['architect_view'] = screenshot_path + world_state['Screenshots']['Architect']
             #print(world_state['ChatHistory'][last_chat_history_length:])
             

@@ -68,9 +68,10 @@ class Camera:
     def apply(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        aspect = 1366/768.0
-        #aspect = self.width/float(self.height or 1)
-        gluPerspective(70, aspect, .05, (render_distance_chunks * 16) * SQRT2)
+        aspect = 1366/768.0 # current
+        #aspect = self.width/float(self.height or 1) # old?
+        gluPerspective(70, aspect, .05, (render_distance_chunks * 16) * SQRT2) #old?
+        #gluPerspective(100, aspect, .01, (render_distance_chunks * 16) * SQRT2) #current
         center = self.position + self.front
         gluLookAt(self.x, self.y, self.z,\
                   center[0], center[1], center[2],\
